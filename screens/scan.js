@@ -50,5 +50,8 @@ export default class Scan extends React.Component {
     
       _handleBarCodeRead = ({ type, data }) => {
         alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+
+        const values = data.match(/^otpauth:\/\/totp\/(\w+)\?secret=(\w+)&issuer=(\w+)?$/)
+        console.log(values)
       }
   }
