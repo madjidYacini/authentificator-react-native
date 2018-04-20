@@ -1,61 +1,95 @@
-import React from 'react';
-import { StyleSheet, Text, View, Header,TouchableOpacity,Button } from 'react-native';
-import { StackNavigator } from 'react-navigation';
+import React from "react";
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView} from 'react-native';
+import { StackNavigator } from "react-navigation";
+import { ScanScreen } from "./scan";
 
 export default class HomeScreen extends React.Component {
-    static navigationOptions = ({ navigation }) => {
-        const params = navigation.state.params || {};
-    
-        return {
-            headerTitle:"AUTHENTIFICATOR",
-            
-        };
-      };
-  render() {
-    return (
-      
-    
-      <View style={styles.container}>
-      
-      <TouchableOpacity onPress={() => {
-        /* 1. Navigate to the Details route with params */
-        this.props.navigation.navigate('Scan', {
-         
-        });
-      }}>
-      <Text style = {styles.button}>
-         ADD
-      </Text>
-   </TouchableOpacity>
-   <TouchableOpacity>
-   <Text style = {styles.buttonTwo}>
-      CLEAR
-   </Text>
-</TouchableOpacity>
-      </View>
-     
-    );
+  constructor() {
+    super();
+    this.state = {
+      listing: []
+    };
   }
+
+  // add = () => {
+  //   console.log("add")
+  //   this.props.navigaton.navigate('scan');
+  // };
+
+  _add = obj => {
+    this.setState({listing:[...this.state.listing, obj]});
+
+    // console.log(listing)
+
+  };
+
+  clear = () => {
+    console.log("clear");
+  };
+
+  static navigationOptions = {
+    title: "Authentificator"
+  };
+
+  render()
+   {
+       const list = this.state.listing.map((item , id ) => {
+           console.log(item);
+           return (
+               <View  key = {id}>
+                   <Text style={styles.ListText}>
+                       {item.secret} {item.label} {item.issuer}
+                   </Text>
+               </View>
+           )
+       })
+
+       return (
+           <View style={styles.container}>
+               <TouchableOpacity
+                   style={styles.buttonAdd}
+                   onPress={() =>
+                       this.props.navigation.navigate("scan", {
+                           add: this._add
+                       })
+                   }
+               >
+                   <Text> ADD </Text>
+               </TouchableOpacity>
+               <TouchableOpacity style={styles.buttonClear} onPress={this.clear}>
+                   <Text> CLEAR</Text>
+               </TouchableOpacity>
+               <ScrollView>{list}</ScrollView>
+
+
+           </View>
+       );
+   }
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+   
+    paddingHorizontal: 10
   },
-  button: {
-    width : 350,
-    textAlign : "center",
-    color : "white",
-    padding: 25,
-    backgroundColor: "#7facf4"
- },buttonTwo: {
-   marginTop : 5,
-  width : 350,
-  textAlign : "center",
-  color : "white",
-  padding: 25,
-  backgroundColor: "#f98100"
+  buttonAdd: {
+    alignItems: "center",
+    backgroundColor: "#6da0f2",
+    padding: 10,
+    marginBottom: 30,
+    marginTop: 50
+  },
+  buttonClear: {
+    alignItems: "center",
+    backgroundColor: "#f96c20",
+    padding: 10
+  },
+  ListText: {
+    alignItems: "center",
+    color: '#000000',
+    backgroundColor: "#ffff66",
+    marginTop : 10,
+    padding: 10
 }
 });

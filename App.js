@@ -21,7 +21,7 @@ const RootStack = StackNavigator ({
   home : {
     screen : HomeScreen,
   }, 
-  Scan: {
+  scan: {
     screen: Scan,
   },
 })
