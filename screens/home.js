@@ -4,12 +4,11 @@ import { StackNavigator } from "react-navigation";
 import { ScanScreen } from "./scan";
 
 export default class HomeScreen extends React.Component {
-  constructor() {
-    super();
-    this.state = {
+ 
+    state = {
       listing: []
     };
-  }
+  
 
   // add = () => {
   //   console.log("add")
@@ -24,7 +23,7 @@ export default class HomeScreen extends React.Component {
   };
 
   clear = () => {
-    console.log("clear");
+   this.setState({ listing :[]})
   };
 
   static navigationOptions = {
@@ -34,7 +33,7 @@ export default class HomeScreen extends React.Component {
   render()
    {
        const list = this.state.listing.map((item , id ) => {
-           console.log(item);
+         
            return (
                <View  key = {id}>
                    <Text style={styles.ListText}>
