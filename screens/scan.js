@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, View, Alert, head, Button} from 'react-native';
+import {StyleSheet, Text, View, Alert, head, Button,Dimensions} from 'react-native';
 import {Constants, BarCodeScanner, Permissions} from 'expo';
 
 
@@ -23,12 +23,14 @@ export default class Scan extends React.Component {
     _handleBarCodeRead = ({data}) => {
       const {state, goBack } = this.props.navigation
         
-
-        let values =  data.match(/^otpauth:\/\/totp\/(.+)\?secret=(.+)&issuer=(.*)/);
+        const regex = (/^otpauth:\/\/totp\/(.+)\?secret=(.+)&issuer=(.*)/)
+        
+        let values =  data.match(regex);
+        
         label = values[1]
         secret =  values[2]
         issuer =  values[3]
-
+       
         const obj =  {
           label,
           secret,
@@ -41,6 +43,15 @@ export default class Scan extends React.Component {
 
 
     };
+    static navigationOptions = {
+        title: "Scanner",
+        headerStyle:{
+            backgroundColor:'#b0ed6f',
+        },
+        titleStyle :{
+            textAlign : 'center',
+        }
+      };
 
     render() {
         return (
@@ -53,7 +64,12 @@ export default class Scan extends React.Component {
                         <Text>Camera permission is not granted</Text> :
                         <BarCodeScanner
                             onBarCodeRead={this._handleBarCodeRead}
-                            style={{height: 600, width: 600}}
+                            style={{flex: 0,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: 'transparent',
+                                height: Dimensions.get('window').width,
+                                width: Dimensions.get('window').width,}}
                         />
                 }
                 <Text> {this.state.secret}  {this.state.label}  {this.state.issuer} </Text>
