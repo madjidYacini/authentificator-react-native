@@ -118,7 +118,10 @@ export default class HomeScreen extends React.Component {
                    <TouchableOpacity style={styles.buttonClear} onPress={this.clear} >
                        <Text> CLEAR</Text>
                    </TouchableOpacity>
-                   <ScrollView>{list}</ScrollView>
+                   <ScrollView>
+                   <Text>Items</Text>
+                   {list}
+                   </ScrollView>
     
     
                </View>
@@ -136,8 +139,8 @@ export default class HomeScreen extends React.Component {
         alignItems: "center",
         backgroundColor: "#45c0f9",
         padding: 10,
-        marginBottom: 30,
-        marginTop: 50
+        marginBottom: 20,
+        marginTop: 20
       },
       buttonClear: {
         alignItems: "center",
@@ -147,7 +150,8 @@ export default class HomeScreen extends React.Component {
       ListText: {
         alignItems: "center",
         color: '#000000',
-        backgroundColor: "#ffff66",
+        backgroundColor: "#f99c22",
+      
         marginTop : 10,
         padding: 10
     }
