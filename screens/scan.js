@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, View, Alert, head, Button,Dimensions} from 'react-native';
+import {StyleSheet, Text, View, Alert, head, Button,Dimensions,AsyncStorage} from 'react-native';
 import {Constants, BarCodeScanner, Permissions} from 'expo';
 
 
@@ -7,18 +7,23 @@ export default class Scan extends React.Component {
 
     state = {
         hasCameraPermission: null,
+        didScanned : false,
     };
 
     componentDidMount() {
         this._requestCameraPermission();
     }
 
+    
+
     _requestCameraPermission = async () => {
+        
         const {status} = await Permissions.askAsync(Permissions.CAMERA);
         this.setState({
             hasCameraPermission: status === 'granted',
         });
     };
+
 
     _handleBarCodeRead = ({data}) => {
       const {state, goBack } = this.props.navigation
@@ -26,19 +31,34 @@ export default class Scan extends React.Component {
         const regex = (/^otpauth:\/\/totp\/(.+)\?secret=(.+)&issuer=(.*)/)
         
         let values =  data.match(regex);
-        
+        if(values != null){
         label = values[1]
         secret =  values[2]
         issuer =  values[3]
-       
         const obj =  {
-          label,
-          secret,
-          issuer
-        }
-
+            label,
+            secret,
+            issuer
+          }
         state.params.add(obj)
         this.props.navigation.goBack() ;
+        }else{
+            Alert.alert(
+                'Information',
+                'this QR Code doesn\'t match sorry :(',
+                [
+                 
+                  
+                  {text: 'OK', onPress: () =>  this.props.navigation.goBack() },
+                ],
+                { cancelable: false }
+              )
+        
+            
+        }
+        
+
+        
 
 
 

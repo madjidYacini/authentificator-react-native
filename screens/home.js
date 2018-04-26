@@ -1,8 +1,9 @@
 import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView,Alert} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView,Alert, AsyncStorage} from 'react-native';
 import { StackNavigator } from "react-navigation";
 import { ScanScreen } from "./scan";
 import  _  from "lodash" ;
+
 
 export default class HomeScreen extends React.Component {
  
@@ -28,6 +29,7 @@ export default class HomeScreen extends React.Component {
         try {
             await AsyncStorage.setItem('listing',list);
           } catch (error) {
+            console.log(error)
         }
       }
     
@@ -49,9 +51,7 @@ export default class HomeScreen extends React.Component {
     
       };
     
-    //   confirm = ()=>{
-       
-    //   }
+   
       clear = () => {
           if(this.state.listing.length == 0){
             Alert.alert(
