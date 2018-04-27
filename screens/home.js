@@ -3,20 +3,17 @@ import { StyleSheet, Text, View, TouchableOpacity, ScrollView,Alert, AsyncStorag
 import { StackNavigator } from "react-navigation";
 import { ScanScreen } from "./scan";
 import  _  from "lodash" ;
+import { connect } from 'react-redux'
 
 
-export default class HomeScreen extends React.Component {
+ class HomeScreen extends React.Component {
  
-    state = {
-      listing: []
-    };
-  
 
     async componentWillMount(){
         try {
           const result = await AsyncStorage.getItem('listing')
           if (result) {
-            list  = JSON.parse(result) ;
+            listing  = JSON.parse(result) ;
             this.setState({listing:JSON.parse(result)});
           }
         } catch (e) {
@@ -25,60 +22,69 @@ export default class HomeScreen extends React.Component {
       }
     
     
-      async pushItem(list){
+      async pushItem(listing){
         try {
-            await AsyncStorage.setItem('listing',list);
+            await AsyncStorage.setItem('listing',listing);
           } catch (error) {
             console.log(error)
         }
       }
     
-      _add = obj => {
-        if(_.some(this.state.listing, obj )){
-          alert(`The object ${obj.label} already exist`)
+      // _add = obj => {
+      //   if(_.some(this.proo.listing, obj )){
+      //     alert(`The object ${obj.label} already exist`)
     
-        } else {
-            alert(`the object ${obj.label} added successefuly`)
-          this.setState({listing:[...this.state.listing, obj]}, () => {
-            list = JSON.stringify(this.state.listing)
+      //   } else {
+      //       alert(`the object ${obj.label} added successefuly`)
+      //     this.setState({listing:[...this.state.listing, obj]}, () => {
+      //       list = JSON.stringify(this.state.listing)
             
-            this.pushItem(list)
+      //       this.pushItem(list)
     
-          });
+      //     });
     
     
-        }
+      //   }
     
-      };
+      // };
     
-   
       clear = () => {
-          if(this.state.listing.length == 0){
-            Alert.alert(
-                'Message',
-                'you don\'t have items to delete',
-                [
+        this.props.dispatch({ type: 'QRCODE_CLEAR' })
+        this.removeItem()
+      }
+   
+      // clear = () => {
+      //     if(this.state.listing.length == 0){
+      //       Alert.alert(
+      //           'Message',
+      //           'you don\'t have items to delete',
+      //           [
                  
-                  {text: 'Cancel', style: 'cancel'},
+      //             {text: 'Cancel', style: 'cancel'},
                   
-                ],
-                { cancelable: false }
-              ) 
-          }else{
-        Alert.alert(
-            'Confirm',
-            'Are you sure to delete these items ?',
-            [
+      //           ],
+      //           { cancelable: false }
+      //         ) 
+      //     }else{
+      //   Alert.alert(
+      //       'Confirm',
+      //       'Are you sure to delete these items ?',
+      //       [
              
-              {text: 'Cancel', style: 'cancel'},
-              {text: 'OK', onPress: () =>  this.setState({listing:[]})},
-            ],
-            { cancelable: false }
-          )
-        }
+      //         {text: 'Cancel', style: 'cancel'},
+      //         {text: 'OK', 
+      //         onPress: () =>  this.setState({listing:[]}),
+                
+      //       },
+      //       ],
+      //       { cancelable: false }
+      //     )
+      //     AsyncStorage.removeItem("listing")
+          
+      //   }
        
         
-      };
+      // };
     
       static navigationOptions = {
         title: "Authentificator",
@@ -92,7 +98,7 @@ export default class HomeScreen extends React.Component {
     
       render()
        {
-           const list = this.state.listing.map((item , id ) => {
+           const list = this.props.listing.map((item , id ) => {
             
                return (
                    <View  key = {id}>
@@ -128,7 +134,23 @@ export default class HomeScreen extends React.Component {
            );
        }
     }
-    const styles = StyleSheet.create({
+   
+
+    function mapStateToProps(state) {
+      return {
+        listing: state.listing
+        
+      }
+    }
+    // console.log(this.state.listing)
+    
+    export default connect(mapStateToProps)(HomeScreen)
+
+
+
+
+
+     const styles = StyleSheet.create({
       container: {
         flex: 1,
         backgroundColor: "#fff",
@@ -150,6 +172,7 @@ export default class HomeScreen extends React.Component {
       ListText: {
         alignItems: "center",
         color: '#000000',
+        fontSize : 15,
         backgroundColor: "#f99c22",
       
         marginTop : 10,

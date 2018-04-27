@@ -1,9 +1,11 @@
 import React from 'react';
 import {StyleSheet, Text, View, Alert, head, Button,Dimensions,AsyncStorage} from 'react-native';
 import {Constants, BarCodeScanner, Permissions} from 'expo';
+import { connect } from 'react-redux'
+import  _  from "lodash" ;
 
 
-export default class Scan extends React.Component {
+ class Scan extends React.Component {
 
     state = {
         hasCameraPermission: null,
@@ -21,6 +23,7 @@ export default class Scan extends React.Component {
         const {status} = await Permissions.askAsync(Permissions.CAMERA);
         this.setState({
             hasCameraPermission: status === 'granted',
+            didScanned : true
         });
     };
 
@@ -28,6 +31,9 @@ export default class Scan extends React.Component {
     _handleBarCodeRead = ({data}) => {
       const {state, goBack } = this.props.navigation
         
+        this.props.navigation.goBack() ;
+           
+       
         const regex = (/^otpauth:\/\/totp\/(.+)\?secret=(.+)&issuer=(.*)/)
         
         let values =  data.match(regex);
@@ -40,8 +46,16 @@ export default class Scan extends React.Component {
             secret,
             issuer
           }
-        state.params.add(obj)
+        // state.params.add(obj)
+        // if(_.some(this.props.listing, obj )){
+        //     alert(`The object ${obj.label} already exist`)
+        //     alert("test")
+        // }else{
+          
+        this.props.dispatch({ type: 'QRCODE_ADD', payload: obj })
+        
         this.props.navigation.goBack() ;
+        // }
         }else{
             Alert.alert(
                 'Information',
@@ -55,9 +69,9 @@ export default class Scan extends React.Component {
               )
         
             
-        }
         
-
+        
+    }
         
 
 
@@ -97,6 +111,17 @@ export default class Scan extends React.Component {
         );
     }
 }
+
+function mapStateToProps(state) {
+    return {
+      
+      
+    }
+  }
+  // console.log(this.state.listing)
+  
+  export default connect(mapStateToProps)(Scan)
+
 
 const styles = StyleSheet.create({
     container: {
