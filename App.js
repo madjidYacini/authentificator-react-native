@@ -17,15 +17,30 @@ const initial_state = {
 function reducer(prev_state = initial_state, action){
   // console.log("this is qrcodelist",qrcodeList)
  switch(action.type){
+   case 'INIT_DATA':
+   return Object.assign({}, prev_state, {
+    listing: action.payload.listing
+  });
    case 'QRCODE_CLEAR':
     return Object.assign({},prev_state,{
       listing : []
     });
     case "QRCODE_ADD":
-    const tmpList = [...prev_state.listing,action.payload]
     return Object.assign({},prev_state,{
-      listing : tmpList
+      listing : action.payload.listing
     });
+    case "REMOVE_AT":
+    return Object.assign({},prev_state,{
+      listing : action.payload.listing
+    });
+
+    console.log("this is the toz",prev_state.id)
+    
+    // console.log(listing.id)
+    // const listclear 
+    return Object.assign({}, prev_state,{
+      listing : action.playload.listing
+    })
     default:
     return prev_state
  }

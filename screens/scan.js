@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import  _  from "lodash" ;
 
 
+
  class Scan extends React.Component {
 
     state = {
@@ -51,8 +52,22 @@ import  _  from "lodash" ;
         //     alert(`The object ${obj.label} already exist`)
         //     alert("test")
         // }else{
-          
-        this.props.dispatch({ type: 'QRCODE_ADD', payload: obj })
+          const new_list = [...this.props.listing,obj]
+            try {
+                let str = JSON.stringify(new_list);
+                AsyncStorage.setItem("listing", str).then(() => {
+                  this.props.dispatch({
+                    type: "QRCODE_ADD",
+                    payload: {
+                      listing: new_list
+                    }
+                  });
+                });
+              } catch (error) {
+                  console.log(error)
+              }
+
+        // this.props.dispatch({ type: 'QRCODE_ADD', payload: obj })
         
         this.props.navigation.goBack() ;
         // }
@@ -66,16 +81,8 @@ import  _  from "lodash" ;
                   {text: 'OK', onPress: () =>  this.props.navigation.goBack() },
                 ],
                 { cancelable: false }
-              )
-        
-            
-        
-        
+              )   
     }
-        
-
-
-
     };
     static navigationOptions = {
         title: "Scanner",
@@ -114,8 +121,7 @@ import  _  from "lodash" ;
 
 function mapStateToProps(state) {
     return {
-      
-      
+      listing: state.listing
     }
   }
   // console.log(this.state.listing)

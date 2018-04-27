@@ -3,88 +3,86 @@ import { StyleSheet, Text, View, TouchableOpacity, ScrollView,Alert, AsyncStorag
 import { StackNavigator } from "react-navigation";
 import { ScanScreen } from "./scan";
 import  _  from "lodash" ;
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
+import TOTP from '../mlib/totp'
 
 
  class HomeScreen extends React.Component {
  
-
+  state = {
+    timer: null
+}
     async componentWillMount(){
         try {
-          const result = await AsyncStorage.getItem('listing')
+        //   const result = await AsyncStorage.getItem('listing')
+        await AsyncStorage.getItem("listing").then(result => {
+           
           if (result) {
-            listing  = JSON.parse(result) ;
-            this.setState({listing:JSON.parse(result)});
+            let listing  = JSON.parse(result) ;
+            // this.setState({listing:JSON.parse(result)});
+            this.props.dispatch({ type: "INIT_DATA", payload: { listing } });
+
           }
+        });
         } catch (e) {
           console.log(e);
         }
       }
     
     
-      async pushItem(listing){
-        try {
-            await AsyncStorage.setItem('listing',listing);
-          } catch (error) {
-            console.log(error)
-        }
-      }
+    //   async pushItem(listing){
+    //     try {
+    //         await AsyncStorage.setItem('listing',listing);
+    //       } catch (error) {
+    //         console.log(error)
+    //     }
+    //   }
     
-      // _add = obj => {
-      //   if(_.some(this.proo.listing, obj )){
-      //     alert(`The object ${obj.label} already exist`)
-    
-      //   } else {
-      //       alert(`the object ${obj.label} added successefuly`)
-      //     this.setState({listing:[...this.state.listing, obj]}, () => {
-      //       list = JSON.stringify(this.state.listing)
+    //   _add = obj => {
+     
+    //         list = JSON.stringify(this.props.listing)
             
-      //       this.pushItem(list)
+    //         this.pushItem(listing)
+    //     }
     
-      //     });
-    
-    
-      //   }
-    
-      // };
+
     
       clear = () => {
         this.props.dispatch({ type: 'QRCODE_CLEAR' })
-        this.removeItem()
+          AsyncStorage.removeItem("listing")
+        
+      }
+
+      clearItem = (id)=>{
+        Alert.alert(
+              "Remove",
+              `are you sure to remove item ${this.props.listing[id].label}?`,
+              [
+                {
+                  'text':"no"
+                },
+                { text: "Sure", style: "destructive" ,
+               onPress :()=>{
+                 let updated_qr_list = [...this.props.listing]
+                 updated_qr_list.splice(id,1)
+                 const str = JSON.stringify(updated_qr_list)
+                 AsyncStorage.setItem('listing',str).then(()=>{
+                   this.props.dispatch({
+                   type : 'REMOVE_AT',
+                   payload: {
+                     listing : updated_qr_list
+                   }
+                  })
+                 })
+               }
+              }
+            ],
+              { cancelable: false }
+         );
+      
       }
    
-      // clear = () => {
-      //     if(this.state.listing.length == 0){
-      //       Alert.alert(
-      //           'Message',
-      //           'you don\'t have items to delete',
-      //           [
-                 
-      //             {text: 'Cancel', style: 'cancel'},
-                  
-      //           ],
-      //           { cancelable: false }
-      //         ) 
-      //     }else{
-      //   Alert.alert(
-      //       'Confirm',
-      //       'Are you sure to delete these items ?',
-      //       [
-             
-      //         {text: 'Cancel', style: 'cancel'},
-      //         {text: 'OK', 
-      //         onPress: () =>  this.setState({listing:[]}),
-                
-      //       },
-      //       ],
-      //       { cancelable: false }
-      //     )
-      //     AsyncStorage.removeItem("listing")
-          
-      //   }
-       
-        
-      // };
+    
     
       static navigationOptions = {
         title: "Authentificator",
@@ -96,15 +94,33 @@ import { connect } from 'react-redux'
          },
       };
     
+      componentDidUpdate(){
+        const duration = 5000;
+        // if(!this.state.timer){
+        setInterval(() => {
+            this.setState({ timer: this.state.timer + duration })
+        }, duration)
+      // }
+    }
+    // componentWillUnmount(){
+    //   clearInterval(this.myInterval)
+    // }
       render()
        {
+        //    console.log("test",this.props.listing);
            const list = this.props.listing.map((item , id ) => {
-            
+            const token = new TOTP(item.secret, 5).generate()
+
                return (
                    <View  key = {id}>
+                   <TouchableOpacity key = {id} onLongPress= {()=>this.clearItem(id)}  >
+                
                        <Text style={styles.ListText}>
-                           {item.secret} {item.label} {item.issuer}
+                        {token} {item.secret} {item.label} {item.issuer}
                        </Text>
+                       </TouchableOpacity>
+                       
+                 
                    </View>
                )
            })
@@ -115,7 +131,7 @@ import { connect } from 'react-redux'
                        style={styles.buttonAdd}
                        onPress={() =>
                            this.props.navigation.navigate("scan", {
-                               add: this._add
+                            //    add: this._add
                            })
                        }
                    >
