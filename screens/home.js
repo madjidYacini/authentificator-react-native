@@ -108,10 +108,14 @@ import TOTP from '../mlib/totp'
          if(this.props.listing.length==0){
           return (
             <View style={styles.container}>
-                <Text style={styles.textTitle}>Welcome<Text style={{fontWeight: 'bold'}}> to M-Authentificator</Text>{`\n`}In first time, clic  the button below to add a code </Text>
+                <Text style={styles.textTitle}>Welcome to<Text style={{fontWeight: 'bold',fontFamily:"sans-serif-light"}}> M-Authentificator.</Text>
+                 {`\n \n`}
+                 In first time, clic on the icon below to scan a QRcode 
+                 </Text>
                 <TouchableOpacity
                     onPress={() => this.props.navigation.navigate("scan")}>
                     <Image source={require("../assets/02.png")} style={styles.buttonAddFirst} />
+                    <Text style={{fontWeight: 'bold',fontFamily:"monospace",textAlign:"center"}} >Clic here</Text>
                 </TouchableOpacity>
             </View>
         );
@@ -127,7 +131,7 @@ import TOTP from '../mlib/totp'
                 
                        <Text style={styles.ListText}>
                       
-                       <Text style={{fontWeight: 'bold'}}> •issuer :</Text> {`${item.issuer} \n`}<Text style={{fontWeight: 'bold'}}>•password• :</Text>  {`${token} \n`}<Text style={{fontWeight: 'bold'}}>•totp• : </Text>{`${item.label}\n `}  
+                       <Text style={{fontWeight: 'bold',textAlign:"left"}}>•issuer :</Text> {`${item.issuer} \n`}<Text style={{fontWeight: 'bold' ,textAlign:"left"}}>•password :</Text>  {`${token} \n`}<Text style={{fontWeight: 'bold',textAlign:"left"}}>•totp : </Text>{`${item.label}\n `}  
                       
                      </Text>
                        </TouchableOpacity>
@@ -152,8 +156,8 @@ import TOTP from '../mlib/totp'
                    <TouchableOpacity style={styles.buttonClear} onPress={this.clear} >
                        <Text> CLEAR</Text>
                    </TouchableOpacity>
+                   <Text style={{fontWeight: 'bold',fontFamily:"sans-serif-light",textAlign:"center"}}>Accounts</Text>
                    <ScrollView>
-                   <Text>Items</Text>
                    {list}
                    </ScrollView>
     
@@ -208,12 +212,18 @@ import TOTP from '../mlib/totp'
     },
     textTitle: {
         textAlign: "center",
-        fontSize: 20
+        fontSize: 20,
+        marginTop: 50,
+      
     },
     buttonAddFirst:{
       alignSelf: 'center',
       justifyContent: 'center',
       alignItems: 'center',
-
+      height: 100,
+      width: 100,
+      opacity: 0.7,
+      marginTop : 80,
+      borderRadius : 100,
     }
     });
