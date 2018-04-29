@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView,Alert, AsyncStorage} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView,Alert, AsyncStorage,Image} from 'react-native';
 import { StackNavigator } from "react-navigation";
 import { ScanScreen } from "./scan";
 import  _  from "lodash" ;
@@ -14,12 +14,12 @@ import TOTP from '../mlib/totp'
 }
     async componentWillMount(){
         try {
-        //   const result = await AsyncStorage.getItem('listing')
+       
         await AsyncStorage.getItem("listing").then(result => {
            
           if (result) {
             let listing  = JSON.parse(result) ;
-            // this.setState({listing:JSON.parse(result)});
+            
             this.props.dispatch({ type: "INIT_DATA", payload: { listing } });
 
           }
@@ -28,30 +28,30 @@ import TOTP from '../mlib/totp'
           console.log(e);
         }
       }
-    
-    
-    //   async pushItem(listing){
-    //     try {
-    //         await AsyncStorage.setItem('listing',listing);
-    //       } catch (error) {
-    //         console.log(error)
-    //     }
-    //   }
-    
-    //   _add = obj => {
-     
-    //         list = JSON.stringify(this.props.listing)
-            
-    //         this.pushItem(listing)
-    //     }
-    
+      //////////////////////////////////////////////////////
 
-    
       clear = () => {
-        this.props.dispatch({ type: 'QRCODE_CLEAR' })
+        Alert.alert(
+          "Remove",
+          `are you sure to remove all codes ?`,
+          [
+            {
+              'text':"no"
+            },
+            { text: "Sure", style: "destructive" ,
+           onPress :()=>{
+            this.props.dispatch({ type: 'QRCODE_CLEAR' })
           AsyncStorage.removeItem("listing")
+           }
+          }
+        ],
+          { cancelable: false }
+     );
+       
         
       }
+
+      ///////////////////////////////////////////////////////////////////
 
       clearItem = (id)=>{
         Alert.alert(
@@ -96,18 +96,28 @@ import TOTP from '../mlib/totp'
     
       componentDidUpdate(){
         const duration = 5000;
-        // if(!this.state.timer){
+   
         setInterval(() => {
             this.setState({ timer: this.state.timer + duration })
         }, duration)
-      // }
+    
     }
-    // componentWillUnmount(){
-    //   clearInterval(this.myInterval)
-    // }
+   
       render()
        {
-        //    console.log("test",this.props.listing);
+         if(this.props.listing.length==0){
+          return (
+            <View style={styles.container}>
+                <Text style={styles.textTitle}>Welcome<Text style={{fontWeight: 'bold'}}> to M-Authentificator</Text>{`\n`}In first time, clic  the button below to add a code </Text>
+                <TouchableOpacity
+                    onPress={() => this.props.navigation.navigate("scan")}>
+                    <Image source={require("../assets/02.png")} style={styles.buttonAddFirst} />
+                </TouchableOpacity>
+            </View>
+        );
+      
+         }
+         
            const list = this.props.listing.map((item , id ) => {
             const token = new TOTP(item.secret, 5).generate()
 
@@ -116,22 +126,24 @@ import TOTP from '../mlib/totp'
                    <TouchableOpacity key = {id} onLongPress= {()=>this.clearItem(id)}  >
                 
                        <Text style={styles.ListText}>
-                        {token} {item.secret} {item.label} {item.issuer}
-                       </Text>
+                      
+                       <Text style={{fontWeight: 'bold'}}> •issuer :</Text> {`${item.issuer} \n`}<Text style={{fontWeight: 'bold'}}>•password• :</Text>  {`${token} \n`}<Text style={{fontWeight: 'bold'}}>•totp• : </Text>{`${item.label}\n `}  
+                      
+                     </Text>
                        </TouchableOpacity>
                        
                  
                    </View>
                )
            })
-    
+          
            return (
                <View style={styles.container}>
                    <TouchableOpacity
                        style={styles.buttonAdd}
                        onPress={() =>
                            this.props.navigation.navigate("scan", {
-                            //    add: this._add
+                           
                            })
                        }
                    >
@@ -158,7 +170,7 @@ import TOTP from '../mlib/totp'
         
       }
     }
-    // console.log(this.state.listing)
+   
     
     export default connect(mapStateToProps)(HomeScreen)
 
@@ -193,5 +205,15 @@ import TOTP from '../mlib/totp'
       
         marginTop : 10,
         padding: 10
+    },
+    textTitle: {
+        textAlign: "center",
+        fontSize: 20
+    },
+    buttonAddFirst:{
+      alignSelf: 'center',
+      justifyContent: 'center',
+      alignItems: 'center',
+
     }
     });

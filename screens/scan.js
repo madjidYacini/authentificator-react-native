@@ -10,7 +10,7 @@ import  _  from "lodash" ;
 
     state = {
         hasCameraPermission: null,
-        didScanned : false,
+         didScanned : false
     };
 
     componentDidMount() {
@@ -24,15 +24,16 @@ import  _  from "lodash" ;
         const {status} = await Permissions.askAsync(Permissions.CAMERA);
         this.setState({
             hasCameraPermission: status === 'granted',
-            didScanned : true
+           
         });
     };
 
 
     _handleBarCodeRead = ({data}) => {
+      
       const {state, goBack } = this.props.navigation
-        
-        this.props.navigation.goBack() ;
+    
+      this.props.navigation.goBack() ;
            
        
         const regex = (/^otpauth:\/\/totp\/(.+)\?secret=(.+)&issuer=(.*)/)
@@ -48,10 +49,23 @@ import  _  from "lodash" ;
             issuer
           }
         // state.params.add(obj)
-        // if(_.some(this.props.listing, obj )){
-        //     alert(`The object ${obj.label} already exist`)
-        //     alert("test")
-        // }else{
+        if(_.some(this.props.listing, obj )){
+            // alert(`The object ${obj.label} already exist`)
+            Alert.alert(
+                "Info",
+                `The object ${obj.label} already exist`,
+                [
+                  
+                  { text: "Cancel", style: "destructive" ,
+                 onPress :()=>{
+                  this.props.navigation.goBack()
+                 }
+                },
+              ],
+                { cancelable: false }
+           );
+            
+        }else{
           const new_list = [...this.props.listing,obj]
             try {
                 let str = JSON.stringify(new_list);
@@ -68,9 +82,24 @@ import  _  from "lodash" ;
               }
 
         // this.props.dispatch({ type: 'QRCODE_ADD', payload: obj })
+        Alert.alert(
+            "Message ",
+            `The object ${obj.label}  has been submitted.`,
+            [
+                {
+                    'text':"View"
+                  },
+              { text: "Add another", style: "destructive" ,
+             onPress :()=>{
+                this.props.navigation.navigate("scan")
+             }
+            }
+          ],
+            { cancelable: false }
+       );
         
-        this.props.navigation.goBack() ;
-        // }
+        // this.props.navigation.goBack() ;
+        }
         }else{
             Alert.alert(
                 'Information',
